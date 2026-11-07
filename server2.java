@@ -1,28 +1,30 @@
 package serverdemo;
-import java.io.*;
 import java.net.*;
-
-public class client2 {
-    public static void main(String[]args)throws Exception{
-        System.out.println("client is ready!");
-        Socket client=new Socket("localhost",343);
-        System.out.println("Enter a number to send it to server:");
-        BufferedReader fromUser=new BufferedReader(new InputStreamReader(System.in));
-        String num=fromUser.readLine();
-              
-        PrintWriter toServer=new PrintWriter(client.getOutputStream(),true);
-        toServer.println(num);
-        System.out.println("number sent to server is: "+num);
+import java.io.*;
+public class server2 {
+    public static void main(String[] args)throws Exception{
+        System.out.println("server is ready!");
+        ServerSocket ss=new ServerSocket(343);
+        System.out.println("server is waiting...");
+        Socket server=ss.accept();
+        System.out.println("server is connected!");
         
-        BufferedReader fromServer=new BufferedReader(new InputStreamReader(client.getInputStream()));
-        String data=fromServer.readLine();
-        System.out.println("number received from server is: "+data);
+        BufferedReader fromClient=new BufferedReader(new InputStreamReader(server.getInputStream()));
+        String num=fromClient.readLine();
+        System.out.println("Number received from client is: "+num);
         
-        toServer.close();
-        fromServer.close();
-        fromUser.close();
-        client.close();
+        int data=Integer.parseInt(num);
+        long factorial=1;
+        for(int i=2;i<=data;i++){
+            factorial*=i;
+        }
+        PrintWriter toClient=new PrintWriter(server.getOutputStream(),true);
+        toClient.println(factorial);
+        System.out.println("Number sent to server is: "+data);
         
-        
+        fromClient.close();
+        toClient.close();
+        server.close();
+        ss.close();
     }
 }
